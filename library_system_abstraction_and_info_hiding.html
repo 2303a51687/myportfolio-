@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Library System — Abstraction &amp; Information Hiding</title>
+  <style>
+    :root{--bg:#f6f8fb;--card:#ffffff;--muted:#6b7280;--accent:#2563eb}
+    body{font-family:Inter,system-ui,Segoe UI,Roboto,Helvetica,Arial; background:var(--bg); color:#0f172a; margin:0; padding:32px}
+    .wrap{max-width:980px;margin:0 auto}
+    header{display:flex;align-items:center;gap:16px}
+    h1{margin:0;font-size:28px}
+    p.lead{color:var(--muted);margin-top:8px}
+    .card{background:var(--card);border-radius:12px;padding:20px;margin-top:18px;box-shadow:0 6px 20px rgba(2,6,23,0.06)}
+    table{width:100%;border-collapse:collapse;margin-top:8px}
+    table th, table td{padding:10px;border-bottom:1px solid #eef2ff;text-align:left}
+    pre{background:#0b1220;color:#e6eef8;padding:12px;border-radius:8px;overflow:auto}
+    code{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace}
+    .actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+    .btn{background:var(--accent);color:white;padding:10px 14px;border-radius:8px;text-decoration:none;border:none;cursor:pointer}
+    .btn.secondary{background:#111827}
+    .muted{color:var(--muted)}
+    .small{font-size:13px}
+    footer{margin-top:20px;color:var(--muted);font-size:13px}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div>
+        <h1>Library System — Abstraction &amp; Information Hiding</h1>
+        <p class="lead">HTML assignment file that explains abstract entities, abstraction examples, and information hiding for a university library system.</p>
+      </div>
+    </header>
+
+    <section class="card" id="entities">
+      <h2>1. Abstract Entities</h2>
+      <p class="muted small">These are the principal classes (abstract entities) used in the system.</p>
+      <table>
+        <thead>
+          <tr><th>Entity</th><th>Description</th><th>Key Attributes / Responsibilities</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><strong>Book</strong></td><td>Represents a book in the library</td><td>title, author, category, availability, bookID</td></tr>
+          <tr><td><strong>Student</strong></td><td>Represents a student user</td><td>studentID, name, email, borrowedBooks, fineAmount</td></tr>
+          <tr><td><strong>Librarian</strong></td><td>Manages library operations</td><td>librarianID, name, loginCredentials</td></tr>
+          <tr><td><strong>BorrowRecord</strong></td><td>Tracks borrowing / returning</td><td>recordID, book, student, borrowDate, dueDate, returnDate</td></tr>
+          <tr><td><strong>Notification</strong></td><td>Sends reminders and alerts</td><td>message, recipient, dateSent</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="card" id="abstraction">
+      <h2>2. Abstraction: Simplify Complex Details</h2>
+      <p class="muted small">Abstraction exposes only what the user needs to know and hides internal complexity.</p>
+
+      <h3>Example — Book</h3>
+      <p>Students only see: <em>title, author, category, availability</em>. Internal details (publisher, edition, ISBN, shelf location) are hidden from student views.</p>
+
+      <h4>Conceptual Java example:</h4>
+      <pre><code>// Book.java — simplified
+class Book {
+  private String title;
+  private String author;
+  private String category;
+  private boolean available;
+
+  // Internal details (hidden)
+  private String ISBN;
+  private String publisher;
+  private String edition;
+
+  // Public API — minimal
+  public String getTitle(){ return title; }
+  public String getAuthor(){ return author; }
+  public String getCategory(){ return category; }
+  public boolean isAvailable(){ return available; }
+}
+</code></pre>
+
+    </section>
+
+    <section class="card" id="info-hiding">
+      <h2>3. Information Hiding (Protect Sensitive Data)</h2>
+      <p class="muted small">Use access control, encapsulation, encryption and role checks to protect sensitive data.</p>
+
+      <h3>Sensitive items</h3>
+      <ul>
+        <li><strong>Librarian credentials</strong> — store hashed/encrypted, never reveal raw password</li>
+        <li><strong>Student fines</strong> — viewable only to the student and authorized librarians</li>
+        <li><strong>Borrow history</strong> — restricted to authorized roles</li>
+      </ul>
+
+      <h4>Conceptual Java snippets:</h4>
+      <pre><code>// Librarian.java — credentials hidden
+class Librarian {
+  private String username;
+  private String encryptedPassword; // store only encrypted/hashed password
+
+  public boolean login(String inputPassword){
+    return encrypt(inputPassword).equals(encryptedPassword);
+  }
+
+  private String encrypt(String raw){
+    // placeholder: use a secure hashing algorithm + salt (e.g., bcrypt)
+    return "hashed-" + raw;
+  }
+}
+
+// Student.java — fines protected
+class Student {
+  private double fineAmount; // hidden from public
+
+  // Only student or librarian may access this (conceptually)
+  public double getFineAmount(String requesterRole){
+    if(requesterRole.equals("Librarian") || requesterRole.equals("Self"))
+      return fineAmount;
+    else
+      throw new SecurityException("Unauthorized");
+  }
+
+  private void updateFine(double fine){
+    this.fineAmount = fine;
+  }
+}
+</code></pre>
+
+    </section>
+
+    <section class="card" id="summary">
+      <h2>4. Summary</h2>
+      <p class="muted small">Key takeaways:</p>
+      <ul>
+        <li><strong>Abstraction</strong> — show only necessary fields to users, hide internal fields.</li>
+        <li><strong>Information hiding</strong> — keep sensitive data private, enforce access control and store secrets securely.</li>
+        <li><strong>Encapsulation</strong> — wrap data and expose only safe operations (e.g., borrowBook(), returnBook()).</li>
+      </ul>
+
+      <div class="actions">
+        <button class="btn" id="downloadBtn">Download HTML File</button>
+        <button class="btn secondary" id="copyBtn">Copy HTML to Clipboard</button>
+      </div>
+
+      <p class="small muted">Note: Code snippets are conceptual and intended for explanatory purposes only. For production, use secure libraries for hashing, authentication and role-based access control.</p>
+    </section>
+
+    <footer>
+      <p>Generated: Library System — Abstraction &amp; Information Hiding. Use this file for your assignment; edit as needed.</p>
+    </footer>
+  </div>
+
+  <script>
+    const htmlSource = document.documentElement.outerHTML;
+    document.getElementById('downloadBtn').addEventListener('click', ()=>{
+      const blob = new Blob([htmlSource], {type: 'text/html'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = 'Library_System_Abstraction_and_InfoHiding.html';
+      document.body.appendChild(a); a.click(); a.remove();
+      URL.revokeObjectURL(url);
+    });
+
+    document.getElementById('copyBtn').addEventListener('click', async ()=>{
+      try{
+        await navigator.clipboard.writeText(htmlSource);
+        alert('HTML copied to clipboard — paste into a file and save with .html');
+      }catch(e){
+        alert('Copy failed: ' + e.message);
+      }
+    });
+  </script>
+</body>
+</html>
